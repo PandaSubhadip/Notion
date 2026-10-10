@@ -65,13 +65,46 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
                     message:"Please provide all fieleds",
                     success:false
                     
-                })
+                });
+                
             }
+            const uploadDetials = await uploadImageToCloudinary(video,process.env.FOLDER_NAME);
 
+            const updateSub = await SubSection.findByIdAndUpdate(subSectionId,{
+                timeDuration:timeDuration,
+                description,
+                title,
+                video:uploadDetials.secure_url
+                
+            });
+            return res.status(201).json({
+                message:"New Data of subSection updated Sucessfully",
+                success:true
+            });
 
         }catch(error){
+              return res.status(501).json({
+                message:"Updation of Subsection is failed please try after some time ",
+                success:false
+            });
 
         }
      }
 
      // Delete subSection
+
+     exports.DeleteSubsection = async (req,res)=>{
+       try {
+        // fatch subsection id 
+        const {subSectionId} = req.body;
+        if(!subSectionId){
+            return res.status(403).json({
+                message:"Please provide subsectionId",
+                success:false
+            });
+            const findandDel = await sub
+        }
+       } catch (error) {
+        
+       }
+     }
