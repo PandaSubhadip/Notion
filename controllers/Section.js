@@ -1,7 +1,7 @@
  const Section = require("../models/Section");
  const Course = require("../models/Course");
 
-
+  //create section here
  exports.createSection = async (req , res) =>{
     try {
         // data fatch 
@@ -51,7 +51,7 @@
 
  }
    
-  
+  // update section here
     
   exports.updateSection = async (req,res)=>{
      try {
@@ -82,7 +82,7 @@
          })
      }
   }
-
+  // delete section here
    exports.deleteSection = async (req,res)=>{
     try {
       //Get ID- asuming that we are sending ID in params
@@ -90,6 +90,20 @@
       // find And update and delete
       const deleteSection = await Section.findByIdAndDelete(sectionId);
       // we need to delet entery for course Schema
+      const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      {
+        $pull: {
+          courseContent: sectionId,
+        },
+      },
+      { new: true }
+    ).populate({
+      path: "courseContent",
+      populate: { path: "subSection" },
+    });
+
+        
       // return response
        return res.status(201).json({
         message:"Your Section delete sucessfully",

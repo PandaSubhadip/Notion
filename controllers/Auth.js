@@ -36,9 +36,9 @@ exports.sendOtp = async(req,res)=>{
             lowerCaseAlphabets:false,
             specialChars:false
         });
-        result = await Otp.findOne({Otp:otp});
+        result = await Otp.findOne({otp:otp});
         }
-        const otpPayload = {email,otp}
+        const otpPayload = {email,otp} ;
         const otpBody = await Otp.create(otpPayload);
         console.log(otpBody)
         return res.Status(200).json({
@@ -224,7 +224,7 @@ exports.Login = async (req,res)=>{
 }
 
 
-// Change Password
+// Change Password done here
 
 exports.ChangePassword =  async (req,res)=>{
     try {

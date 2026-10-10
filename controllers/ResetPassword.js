@@ -2,7 +2,7 @@ const User = require("../models/Users");
 const mailsender =  require("../utils/mailSender");
 const becrypt = require("bcrypt")
 
-
+// reset password token generate here
 exports.resetPasswordToken = async(req,res) =>{
     try {
         //Get email from req body
@@ -48,7 +48,7 @@ exports.resetPasswordToken = async(req,res) =>{
           })
     }
 }
-
+// reset password here
 exports.resetPassword = async(req,res)=>{
     try {
         //Data fatch 

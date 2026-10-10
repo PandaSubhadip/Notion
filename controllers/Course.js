@@ -1,9 +1,11 @@
  const Course = require("../models/Course");
  const user = require("../models/Users");
- const Tag = require("../models/Tag");
+ const Tag = require("../models/Category");
    const {uploadImageToCloudinary} =  require("../utils/imageUploder");
-
-
+const Course = require("../models/Course");
+const { populate } = require("dotenv");
+  
+    // create course start here
    exports.createCourse = async(req,res)=>{
      try {
         // fatch data always first
@@ -90,7 +92,7 @@
      }
    }
 
-
+// show all course
    exports.showAllCourse = async(req,res)=>{
     try {
         const allCourse = await Course.find({},
@@ -115,6 +117,48 @@
             message:"can't fatch course Sorry",
             error
          })
+    }
+   }
+   ///get course detials
+   exports.getCourseDetials = async (req,res)=>{
+    try {
+        // Get course id from req
+        const {coursId} = req.body;
+        const Coursedetials = await Course.find({
+            _id:coursId
+        }).populate(
+            {
+                path:"instructor",
+                populate:{
+                    path:"additionalDetials"
+                }
+            }
+        )
+        .populate("category")
+        .populate("ratingAndReview")
+        .populate({
+            path:"courseContent",
+            populate:{
+                path:"subSection"
+            },
+        })
+        .exec();
+        if(!Coursedetials){
+            return res.status(400).json({
+                message:`Coudn't fatch any course,${coursId}`,
+                success:false
+            });
+           
+        }
+         return res.status(201).json({
+                message:"Course fatched",
+                success:true
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message:"Error in while fatching course",
+            success:false
+        });
     }
    }
 

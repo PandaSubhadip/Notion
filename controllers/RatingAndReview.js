@@ -63,7 +63,73 @@ const Course = require("../models/Course");
 
 
    //GET avarage rating
+   exports.getAverageRating = async(req,res)=>{
+    try{
+         // Get  course id 
+         const {couseId}= req.body;
+         // Calculate avrage rating
+         const result = await RatingAndReview.aggregate([
+            {
+                $match:{course:new mongoose.Types.ObjectId(couseId)
 
+                },
+                
+                },
+                {
+                    $group:{
+                        _id:null,
+                        avarageRating:{$avg:$rating},
+                    }
+            }
+         ])
+           // return response
+           if(result.length>0){
+            return res.status(200).json({
+                
+                success:true,
+                avarageRating:result[0].avarageRating
+            })
+           }
+           // if no rating found
+           return res.status(200).json({
+            message:"No rating founs for  this course till now",
+            success:true,
+            avarageRating:0
+           });
+    } catch(error){
+        return res.status(500).json({
+            message:"unable to get avarage rating",
+            success:false,
+            error
+        })
+    }
+   }
 
 
    //getAllrating
+    exports.getAllrating = async(req,res)=>{
+      try{
+        const allreviews = await RatingAndReview.find({}).sort({rating:desc}).populate({
+            path:"user",
+            select:"firstName lastname email image"
+        }) 
+       .populate({
+        path:"course",
+        select:"courseName"
+       })
+       .exec();
+       // return response
+       return res.status(200).json({
+        message:"All reviews fatched sucessfully",
+        success:true,
+        data:allreviews
+       })
+      }
+      catch(error){
+        return res.status(500).json({
+            message:"Unable to get all reviews please try after some time latter",
+            success:false,
+            message:error.message
+        })
+      }
+    }
