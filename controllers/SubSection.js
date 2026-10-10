@@ -102,9 +102,14 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
                 message:"Please provide subsectionId",
                 success:false
             });
-            const findandDel = await sub
+            const findandDelete = await SubSection.findByIdAndUpdate(subSectionId);
         }
        } catch (error) {
-        
+             console.log(error);
+           return res.status(501).json({
+                message:"we are unable to delete the SubSection Please try after some time",
+                success:false,
+                
+            });
        }
      }

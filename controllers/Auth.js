@@ -228,14 +228,55 @@ exports.Login = async (req,res)=>{
 
 exports.ChangePassword =  async (req,res)=>{
     try {
-        //get data from req body
-        // get old Password new password confirm password
-        // validation
+        //get data from req body get old Password new password confirm password
+        const {oldPassword,newpassword,confirmPassword} = req.body;
+
+                // validation
+                if(!oldPassword || !newpassword || !confirmPassword){
+                    return res.status(403).json({
+                        message:"Please provide all fields",
+                        success:false
+                    })
+                }
+                // check old password is match or not 
+                const user = await User.findById(req.user.id);
+                if(!user){
+                    return res.status(404).json({
+                        message:"User Not Found ",
+                        success:false
+                    })
+                }
+                const oldpwdMatch = await becrypt.compare(oldPassword,user.password);
+                if(!oldpwdMatch){
+                    return res.status(400).json({
+                        message:"Old Password is incorrect",
+                        success:false
+                    })
+                 
+                    }
+                       if( newpassword  !== confirmPassword){
+                        return res.status(400).json({
+                            message:"New Password and confirm Password not match",
+                            success:false
+                        })
+                }
       //  Update password in db
+      const hashPassword = await becrypt.hash(newpassword,10);
+      user.password =hashPassword;
+      await user.save();
       // send mail to Password updated
+       
       // return response
+      return res.status(201).json({
+        message:"Password Updated Successfully",
+        success:true
+      });
         
     } catch (error) {
+        return res.status(501).json({
+        message:"Password Updation failed please try after some time",
+        success:false
+      });
         
     }
 }
