@@ -2,8 +2,8 @@
  const user = require("../models/Users");
  const Tag = require("../models/Category");
    const {uploadImageToCloudinary} =  require("../utils/imageUploder");
-const Course = require("../models/Course");
-const { populate } = require("dotenv");
+
+
   
     // create course start here
    exports.createCourse = async(req,res)=>{
