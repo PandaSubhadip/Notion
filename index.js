@@ -13,7 +13,7 @@ const paymentRoute = require("./routes/Payment");
   const {CloudinaryConnect} = require("./config/Cloudinary");
   const fileUploader = require("express-fileupload");
 
-     console.log("16");
+    
   // Database Connection
   database.connectDB();
   // middleware
@@ -32,10 +32,10 @@ const paymentRoute = require("./routes/Payment");
   // cloudinary connection
   CloudinaryConnect();
   const PORT = process.env.PORT || 4000 ;
-  console.log("port",PORT);
+ 
 
     //Routes 
-    //  app.use("/api/v1/auth",userRoute);
+     app.use("/api/v1/auth",userRoute);
      app.use("/api/v1/course",courseRoute);
      app.use("/api/v1/profile",profileRoute);
      app.use("/api/v1/payment",paymentRoute);

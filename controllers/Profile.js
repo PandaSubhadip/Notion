@@ -31,7 +31,7 @@
             // return response
             return res.status(201).json({
                 message:"Profile Updated Sucessfull",
-                success:false,
+                success:true,
                 profileDet
             })
         } catch (error) {
@@ -77,17 +77,19 @@
      }
 
 
-     exports.getAllUserDetials = async(req,res)=>{
+     exports.getUserDetials = async(req,res)=>{
         try {
             //Get id
             const id = req.user.id;
             // Validation and get user detials
-            const userDetials = await User.findById(id).populate("additionalDetails").exec();
-            
+         const userDetails = await User.findOne({ _id: id })
+         .populate("additionalDetails")
+          .exec(); 
             // return response here
               return res.status(200).json({
                     message:"User Data fatched Successfull",
-                    success:true
+                    success:true,
+                   data: userDetails
                 });
 
         } catch (error) {

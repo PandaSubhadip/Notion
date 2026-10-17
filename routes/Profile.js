@@ -3,20 +3,20 @@ const router = express.Router();
 const {
     updateProfile,
    deleteAccount,
-   getAllUserDetials
+   getUserDetials
 
 } = require("../controllers/Profile");
-
+ const {auth}= require("../middlewares/auth");
 
 // ************************************************************************************************** //
 //                                           Profile  Routes                                 
 // **************************************************************************************************//
   //                                           Route for Update Profile route                        //
-  router.post("/updateProfile",updateProfile);
+  router.post("/updateProfile",auth,updateProfile);
    //                                           Route for delete Account                       //
-   router.post("/deleteAccount",deleteAccount);
-   //                                           Route for All user route                       //
-   router.post("/getAllUserDetials",getAllUserDetials);
+   router.post("/deleteAccount",auth,deleteAccount);
+   //                                           Route for userDetials route                       //
+   router.post("/getUserDetials",auth,getUserDetials);
   
   
 

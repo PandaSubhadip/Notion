@@ -3,7 +3,8 @@
         require("dotenv").config();
         const otpGenerator = require("otp-generator");
        const becrypt = require("bcrypt");
-const Profile = require("../models/Profile");
+       const Profile = require("../models/Profile");
+       const jwt = require("jsonwebtoken");
 
 
 //Send OTP
@@ -40,12 +41,12 @@ exports.sendOtp = async(req,res)=>{
         }
         const otpPayload = {email,otp} ;
         const otpBody = await Otp.create(otpPayload);
-        console.log(otpBody)
-        return res.Status(200).json({
-            success:true,
-            message:"Otp Sent Sucessfully",
+        // console.log(otpBody)
+       return res.status(200).json({
+    success: true,
+    message: "OTP sent successfully"
+});
 
-        })
 
     }
     catch(error){
@@ -92,7 +93,7 @@ exports.sendOtp = async(req,res)=>{
 
 
         //Check User already exist or not
-        const existingUser = await findOne({email});
+        const existingUser = await User.findOne({email});
         if(existingUser){
             return res.status(400).json({
                 message:"User already exiest Please Login",
@@ -103,20 +104,24 @@ exports.sendOtp = async(req,res)=>{
 
         // find most recent otp
         const recentOtp = await Otp.find({email}).sort({createdAt:-1}).limit(1);
-        console.log("Recent Otp",recentOtp)
+       
         // validate Otp
         if(recentOtp.length == 0){
+             
             return res.status(400).json({
                 message:"Otp Not Found",
                 success:false
             }) 
-
-            }  else if (recentOtp.otp !== otp){
+          
+            }   
+             else if (recentOtp[0].otp !== otp){
+              
                   return res.status(400).json({
                 message:"Otp Not Match",
                 success:false
             })
         }
+          console.log("recent otp" ,recentOtp.otp);
         //Hash password
         const hashPassword = await becrypt.hash(password,10);
         //Entery Created db
@@ -128,8 +133,8 @@ exports.sendOtp = async(req,res)=>{
 
          })
         const savedb = await User.create({
-            firstName,
-            lastName,
+           firstName,
+             lastName,
             email,
             password:hashPassword,
             confirmPasword,
@@ -137,7 +142,7 @@ exports.sendOtp = async(req,res)=>{
             contactNumber,
             otp,
             additionalDetails:profdb.id,
-            image:`https://api.dicebear.com/5.x/initials/svg?seed=${firstname} ${lastName},`
+            image:`https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName},`
         })
         //return response
         return res.status(201).json({
@@ -152,7 +157,7 @@ exports.sendOtp = async(req,res)=>{
          //return response
         return res.status(501).json({
             message:"User creation failed please chack Input",
-            success:true,
+            success:false,
          })
     }
 
@@ -165,7 +170,7 @@ exports.Login = async (req,res)=>{
     try {
         // Get data from req
         const {email,password} = req.body;
-
+          
         // validation
         if(!email || !password){
             return res.status(400).json({
@@ -174,27 +179,33 @@ exports.Login = async (req,res)=>{
             })
         }
         //User Check  exiest or not
-        const user = await User.findOne({email}).populate("additionalDetials");
-
+        const user = await User.findOne({email}).populate("additionalDetails");
+         
         if(!user){
             return res.status(401).json({
                 message:"User Not registerd Please Signup then Try",
                 success:false
             })
+            
         }
+        
+        const isMatch = await becrypt.compare(password, user.password);
         // generate Jwt  after password matchin
-        if(await becrypt.compare(password,user.password)){
+        if (isMatch) {
+       
             const payload = {
                 email:user.email,
                 id:user._id,
-                role:user.role
+                role:user.accountType
             }
+            
             const token = jwt.sign(payload,process.env.JWT_SECRET,{
                 expiresIn:"2h"
-            } )
+            } );
+             
             user.token = token;
             user.password = undefined;
-       
+              
 
         // create a cookies and send response
         const options = {
