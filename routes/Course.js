@@ -6,14 +6,14 @@ const {
   getCourseDetials
 
 } = require("../controllers/Course");
-
+  const {auth} = require("../middlewares/auth")
 
 
 // ************************************************************************************************** //
 //                                           Course Routes                                 
 // **************************************************************************************************//
   //                                           Route for createCourse                        //
-  router.post("/createCourse",createCourse);
+  router.post("/createCourse",auth,createCourse);
    //                                           Route for showAllCourse                      //
    router.post("/showAllcourse",showAllCourse);
    //                                           Route for  getallCourse                        //

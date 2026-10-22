@@ -59,7 +59,8 @@ exports.auth = async ( req, res, next)=>{
     exports.isInstructor =  async (req,res,next)=>{
     try {
         //check the role of user
-        if(req.user.accountType !== "Instructor") {
+        //  console.log(req.user)
+        if(req.user.role !== "Instructor") {
             return res.status(401).json({
                 success:false,
                 message:"This Protected routes only for Instructor "
@@ -81,7 +82,7 @@ exports.auth = async ( req, res, next)=>{
  exports.isAdmin =  async(req,res,next)=>{
     try {
         //check the role of user
-        if(req.user.accountType !== "Admin") {
+        if(req.user.role !== "Admin") {
             return res.status(401).json({
                 success:false,
                 message:"This Protected routes only for Admin "

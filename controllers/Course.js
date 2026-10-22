@@ -1,5 +1,5 @@
  const Course = require("../models/Course");
- const user = require("../models/Users");
+ const User = require("../models/Users");
  const Tag = require("../models/Category");
    const {uploadImageToCloudinary} =  require("../utils/imageUploder");
 
@@ -10,9 +10,9 @@
      try {
         // fatch data always first
         const{courseName, courseDescription, whatYouWillLearn,price,tag} = req.body;
-
         //Get Thumbanil 
         const thumbnail = req.files.thumbnail;
+       
         // validation 
        if( !courseName || !courseDescription ||  !whatYouWillLearn || !price || !tag || !thumbnail){
         return res.status(400).json({
@@ -22,8 +22,9 @@
        }
 
         // check User role is Instuctor or other
+       
         const userId = req.user.id;
-        const instructor = await user.findById(userId);
+        const instructor = await User.findById(userId);
         console.log("Instuctor Detials :",instructor);
         // throwing error if user not exiest
       if(!instructor){
@@ -33,7 +34,7 @@
         })
       }
         // Tag validation chk 
-        const tagvalid = await Tag.findById(tag); 
+        const tagvalid = await Tag.findOne({name: tag}); 
         if(!tagvalid){
             return res.status(400).json({
                 message:"Tag Is not valid please use valid tag",
@@ -42,6 +43,7 @@
 
 
         }
+       
         //Upload Img to cloudinary
         const thubnailImage = await uploadImageToCloudinary(thumbnail,process.env.FOLDER_NAME);
         // Create entry in db
@@ -50,13 +52,14 @@
             courseDescription,
             instructor:instructor._id,
             whatYouWillLearn:whatYouWillLearn,
+            tag:tag,
             price,
-            tag:tagvalid._id,
+            Category:tagvalid._id,
             thumbnail:thubnailImage.secure_url
         })
         // add new course to user Schema 
-        await user.findByIdAndUpdate(
-            {id:instructor._id},
+        await User.findByIdAndUpdate(
+           instructor._id,
             {
                 $push: {
                     courses:courseDb._id
@@ -66,7 +69,8 @@
             {new:true}
         );
         // Update Tag Schema
-        await Tag.findByIdAndUpdate({id:tagvalid._id},
+        await Tag.findByIdAndUpdate(
+            tagvalid._id,
             {
                 $push:{
                      courses:courseDb._id
@@ -109,11 +113,11 @@
          return res.status(201).json({
             success:true,
             message:"Course Fatched  Sucessfully",
-            data:courseDb
+            data:allCourse
          })
     } catch (error) {
           return res.status(501).json({
-            success:true,
+            success:false,
             message:"can't fatch course Sorry",
             error
          })
@@ -152,7 +156,8 @@
         }
          return res.status(201).json({
                 message:"Course fatched",
-                success:true
+                success:true,
+                data:Coursedetials
             })
     } catch (error) {
         return res.status(500).json({

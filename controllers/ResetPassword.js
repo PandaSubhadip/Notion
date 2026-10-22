@@ -1,7 +1,7 @@
 const User = require("../models/Users");
 const mailsender =  require("../utils/mailSender");
 const becrypt = require("bcrypt")
-
+const {passwordUpdate} = require("../mail/templates/resetPassword");
 // reset password token generate here
 exports.resetPasswordToken = async(req,res) =>{
     try {
@@ -30,11 +30,7 @@ exports.resetPasswordToken = async(req,res) =>{
         // Create Url
          const url= `http://localhost:3000/update-password/${token}`
         // send mail conating the url
-        await mailsender (
-            email,
-            "Password Reset Link",
-           ` Password Reset Link: ${url}`
-        )
+       await mailsender(email,"Reset Your Password",passwordUpdate(user.firstName,user.email,url));
         // return the response
           return res.status(201).json({
             message:"Email sent Sucessfully please check",

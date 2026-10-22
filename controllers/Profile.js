@@ -1,5 +1,6 @@
    const Profile = require("../models/Profile");
    const User = require("../models/Users");
+   const { uploadImageToCloudinary } = require("../utils/imageUploder");
 
     exports.updateProfile = async (req,res)=>{
         try {
@@ -100,3 +101,48 @@
                 });
         }
      } 
+
+  exports.updateProfilePicture = async(req, res) => {
+    try {
+        // Get id.....
+        const { id } = req.user;
+       
+        // 1. FIX: Check if files exist BEFORE extracting the photo file
+        if (!req.files || !req.files.photo) {
+            return res.status(400).json({
+                success: false,
+                message: "No profile picture was uploaded. Please attach a file using the field key 'photo'."
+            });
+        }
+           
+        // 2. SAFE NOW: Extract the photo file after verifying it exists
+        const photoFile = req.files.photo;
+
+        // 3. Upload to Cloudinary using the correct object variable name
+        const uploadPhoto = await uploadImageToCloudinary(photoFile, process.env.FOLDER_NAME);
+        console.log("UploadPhoto", uploadPhoto);
+
+        // 4. Update Database
+        const userupdate = await User.findByIdAndUpdate(
+            { _id: id },
+            { image: uploadPhoto.secure_url },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            message: "User Profile Picture Updated Successfully",
+            success: true,
+            data: uploadPhoto.secure_url
+        });
+
+    } catch (error) {
+        // PRO-TIP: Log the error on your terminal so you can read exactly what went wrong
+        console.error("Upload Route Error:", error);
+
+        return res.status(500).json({
+            message: "Error occurred while Updating the profile picture",
+            success: false,
+            error: error.message // Sending error.message back reveals the clean, readable error text
+        });
+    }
+};
