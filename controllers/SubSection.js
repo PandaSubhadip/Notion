@@ -53,7 +53,7 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
      }
 
      //Update subSection
-     const updateSubsection = async(req,res)=>{
+     exports.updateSubsection = async(req,res)=>{
         try{
             // Get data from req body
             const {subSectionId,title,timeDuration,description} = req.body;
@@ -102,8 +102,13 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
                 message:"Please provide subsectionId",
                 success:false
             });
-            const findandDelete = await SubSection.findByIdAndUpdate(subSectionId);
+           
         }
+           const findandDelete = await SubSection.findByIdAndUpdate(subSectionId);
+             return res.status(201).json({
+                message:"Delete subsection sucessfull",
+                success:true
+            });
        } catch (error) {
              console.log(error);
            return res.status(501).json({
