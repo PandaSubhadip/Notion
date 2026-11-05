@@ -69,14 +69,14 @@ exports.sendOtp = async(req,res)=>{
             lastName,
             email,
             password,
-            confirmPasword,
+            confirmPassword,
             accountType,
             contactNumber,
             otp
 
         } = req.body;
         //Validition
-        if( !firstName || !lastName || !email   || !password || !confirmPasword || !otp){
+        if( !firstName || !lastName || !email   || !password || !confirmPassword || !otp){
             return res.status(403).json({
                 success:false,
                 message:"All fieleds are required"
@@ -84,7 +84,7 @@ exports.sendOtp = async(req,res)=>{
         }       
            
         // Two password match
-        if(password !== confirmPasword){
+        if(password !== confirmPassword){
             return res.status(400).json({
                 message:"Password and confirm Password doesn't Match",
                 success:false
@@ -137,7 +137,7 @@ exports.sendOtp = async(req,res)=>{
              lastName,
             email,
             password:hashPassword,
-            confirmPasword,
+            confirmPassword,
             accountType,
             contactNumber,
             otp,

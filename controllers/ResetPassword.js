@@ -49,7 +49,14 @@ exports.resetPassword = async(req,res)=>{
     try {
         //Data fatch 
         const { password, confirmPassword, token}= req.body;
+
         //Validation 
+         if(password != confirmPassword){
+             return res.status(400).json({
+                message:"Password or Confirm Password Doesn't Match",
+                success:false
+            })
+         }
         const userDetails = await User.findOne({token:token});
         if(!userDetails){
             return res.status(400).json({
